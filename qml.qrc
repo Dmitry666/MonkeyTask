@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>LoginPage.qml</file>
+        <file>MainPage.qml</file>
+        <file>SettingsPage.qml</file>
+    </qresource>
+    <qresource prefix="/Service">
+        <file>MonkeyService.qml</file>
+        <file>RequestService.qml</file>
+        <file>PooledService.qml</file>
+    </qresource>
+    <qresource prefix="/Components">
+        <file>TaskItem.qml</file>
+        <file>GroupItem.qml</file>
+    </qresource>
+</RCC>
