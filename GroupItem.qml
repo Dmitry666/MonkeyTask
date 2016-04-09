@@ -20,38 +20,41 @@ Rectangle {
         }
     }
 
-    /*
     DropArea {
         id: dragTarget
 
-        property string colorKey
-        property alias dropProxy: dragTarget
+        property string taskId
+        //property string colorKey: "red"
+        //property alias dropProxy: dragTarget
 
         anchors.fill: parent
-        keys: [ colorKey ]
+        //keys: [ taskId ]
 
         onEntered: {
             console.debug("DropArea entered");
         }
+        onDropped: {
+            console.debug("DropArea droped");
+        }
+
 
 
         Rectangle {
             id: dropRectangle
 
             anchors.fill: parent
-            color: colorKey
+            color: "gray"
+            opacity: 0.0
 
             states: [
                 State {
                     when: dragTarget.containsDrag
                     PropertyChanges {
                         target: dropRectangle
-                        color: "grey"
+                        opacity: 0.5
                     }
                 }
             ]
         }
-
     }
-    */
 }

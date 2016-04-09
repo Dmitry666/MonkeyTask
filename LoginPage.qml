@@ -10,16 +10,46 @@ Rectangle {
 
     signal logined
 
+    property bool userLogined
 
     //property string loginText
     //property string passwordText
 
+    Component.onCompleted: {
+        if(root.userLogined) {
+            root.loginUser(usetSettings.login, usetSettings.password);
+        }
+    }
+
+    function loginUser(login, password) {
+        monkeyService.sendRequest(
+            'GET',
+            '/login?login=%1&password=%2'.arg(login).arg(password),
+            null,
+            function(error, responseText){
+
+                if(error || responseText.toLowerCase() !== "ok") {
+
+                    root.userLogined = false;
+                    console.error("Error login.");
+                    return;
+                }
+
+                console.debug("User logined");
+
+                root.userLogined = true;
+                root.logined();
+            }
+        );
+    }
+
     Settings {
-        //id: settings
+        id: usetSettings
 
         category: "User"
         property alias login: loginField.text
-        //property alias password: root.passwordText
+        property alias password: passwordField.text
+        property alias userLogined: root.userLogined
     }
 
     Column {
@@ -42,6 +72,7 @@ Rectangle {
             //font.pixelSize: 23 * root.uiScale
             maximumLength: 64
 
+            text: usetSettings.login
             horizontalAlignment: TextField.AlignHCenter
             //verticalAlignment: Text.AlignVCenter
 
@@ -88,23 +119,10 @@ Rectangle {
 
             onClicked: {
 
+                //usetSettings.login = loginField.text;
                 console.debug("Click login");
-                monkeyService.sendRequest(
-                    'GET',
-                    '/login?login=%1&password=%2'.arg(loginField.text).arg(passwordField.text),
-                    null,
-                    function(error, responseText){
+                root.loginUser(loginField.text, passwordField.text);
 
-                        if(error || responseText.toLowerCase() !== "ok") {
-
-                            console.error("Error login.");
-                            return;
-                        }
-
-                        console.debug("User logined");
-                        root.logined();
-                    }
-                );
             }
         }
     } // End column.

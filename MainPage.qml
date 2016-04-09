@@ -22,7 +22,7 @@ Rectangle {
     Component.onCompleted: {
 
         console.debug("MainPage onCompleted");
-        getTasks();
+        //getTasks();
     }
 
     function getTasks() {
@@ -48,7 +48,7 @@ Rectangle {
                     var task = jsonObject[i];
 
                     taskModel.append({
-                        "id": task.id,
+                        "task_id": task.id,
                         "body": task.body,
                         "create_date": task.create_date,
                         "order": task.order,
@@ -79,7 +79,11 @@ Rectangle {
 
         console.debug("createTask");
 
-
+        var task = {
+            "body": body,
+            "order": 1000,
+            "group": root.currentGroup
+        }
         var jsonText = JSON.stringify(task);
         monkeyService.sendRequest(
             'POST',
@@ -88,27 +92,108 @@ Rectangle {
             function(error, responseText) {
                 console.debug(responseText);
 
-                var task = {
-                    "body": body,
-                    "order": 1000,
-                    "group": root.currentGroup
-                }
-                taskModel.append(task);
+                var newTask = JSON.parse(responseText);
+
+
+                taskModel.append({
+                    "task_id": newTask.id,
+                    "body": newTask.body,
+                    "create_date": newTask.create_date,
+                    "order": newTask.order,
+                    "group": newTask.group,
+                    "state": newTask.state
+                });
+                //taskModel.append(task);
             }
         );
     }
 
-    function updateTask(id, title) {
+    function findIndexById(id) {
+        for(var i=0; i<taskModel.count; i++) {
+            if( taskModel.get(i).task_id === id) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    function updateTask(id, task, callback) {
 
         console.debug("updateTask");
-        //taskModel.setProperty(index, "", "")
 
+        var jsonText = JSON.stringify(task);
         monkeyService.sendRequest(
             'PUT',
             '/api/task/:%1'.arg(id),
-            null,
+            jsonText,
             function(error, responseText) {
                 console.debug(responseText);
+                callback();
+            }
+        );
+    }
+
+    function updateBody(id, body) {
+
+        var task = {
+            "body": body
+        }
+
+        updateTask(
+            id,
+            task,
+            function() {
+                var index = findIndexById(id);
+                if(index !== -1 ) {
+                    taskModel.setProperty(index, "body", body);
+                } else {
+                    console.error("Not found task. Update all");
+                    getTasks();
+                }
+            }
+        );
+    }
+
+    function updateState(id, state) {
+
+        var task = {
+            "state": state
+        }
+
+        updateTask(
+            id,
+            task,
+            function() {
+                var index = findIndexById(id);
+                if(index !== -1 ) {
+                    taskModel.setProperty(index, "state", state);
+                } else {
+                    console.error("Not found task. Update all");
+                    getTasks();
+                }
+            }
+        );
+    }
+
+
+    function updateGroup(id, group) {
+
+        var task = {
+            "group": group
+        }
+
+        updateTask(
+            id,
+            task,
+            function() {
+                var index = findIndexById(id);
+                if(index !== -1 ) {
+                    taskModel.setProperty(index, "group", group);
+                } else {
+                    console.error("Not found task. Update all");
+                    getTasks();
+                }
             }
         );
     }
@@ -153,6 +238,11 @@ Rectangle {
     //
 
     Item {
+        id: dndContainer
+        anchors.fill: parent
+    }
+
+    Item {
         id: body
         anchors {
             left: parent.left
@@ -177,12 +267,20 @@ Rectangle {
                 width: listView.width
                 height: 50
 
+                taskId: model.task_id
                 title: model.body
                 status: model.state
                 //type: model.type
 
                 onResolved: {
-                    model.state = 1; //
+                    //model.state = model.state === 0 ? 1 : 0; //
+                    root.updateState(model.task_id, model.state === 0 ? 1 : 0);
+                }
+                onChanged: {
+                    root.updateBody(model.task_id, text);
+                }
+                onChangeGroup: {
+                    root.updateGroup(model.task_id, group);
                 }
             } // End delegate.
         } // End list view.

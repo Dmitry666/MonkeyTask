@@ -63,7 +63,7 @@ void FilterPropertyModel::setSourceModel(QAbstractItemModel* value)
 
 void FilterPropertyModel::clearItems()
 {
-    qDebug() << "FilterPropertyModel.clearItems";
+    //qDebug() << "FilterPropertyModel.clearItems";
 
     if(!_items.isEmpty()) {
 
@@ -75,7 +75,7 @@ void FilterPropertyModel::clearItems()
 
 void FilterPropertyModel::updateItems()
 {
-    qDebug() << "FilterPropertyModel.updateItems";
+    //qDebug() << "FilterPropertyModel.updateItems";
 
     clearItems();
 

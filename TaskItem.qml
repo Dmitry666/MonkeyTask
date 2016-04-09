@@ -7,13 +7,17 @@ Rectangle {
     height: 50
     color: "gray"
 
+    property string taskId
     property string type: "task"
     property string title
     property int status
+    property bool edit
 
     property string colorKey: "blue"
 
     signal resolved
+    signal changed(string text)
+    signal changeGroup(int group)
 
     states: [
         State {
@@ -58,11 +62,14 @@ Rectangle {
         Text {
             id: title
             text: root.title
+
+            visible: !root.edit
+
             anchors {
                 top: parent.top
                 bottom: parent.bottom
                 left: statusRect.right
-                right: mouseArea.left
+                right: rightRow.left
 
                 margins: 5
             }
@@ -70,45 +77,118 @@ Rectangle {
             verticalAlignment: Text.AlignVCenter
         }
 
+        TextEdit {
+            id: editText
+            text: root.title
+
+            visible: root.edit
+
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                left: statusRect.right
+                right: rightRow.left
+
+                margins: 5
+            }
+
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        /*
         MouseArea {
-           id: mouseArea
+            onDoubleClicked: {
 
-           anchors {
-               right: parent.right
-               top: parent.top
-               bottom: parent.bottom
-           }
+            }
+        }
+        */
+        Row {
+            id: rightRow
+            anchors {
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+            }
 
-           width: height
+            Rectangle {
+                id: editButton
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                width: height
 
-           drag.target: tile
+                color: root.edit ? "red" : "yellow"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        root.edit = !root.edit;
+                        if(!root.edit && root.title != editText.text) {
+                            root.changed(editText.text);
+                        }
+                    }
+                }
+            } // End edit button.
 
-           onReleased: parent = tile.Drag.target !== null ? tile.Drag.target : root
+            MouseArea {
+               id: mouseArea
 
-           Rectangle {
-               id: tile
-
-               width: mouseArea.width
-               height: mouseArea.height
-               anchors.fill: parent
-
-               color: colorKey
-
-               Drag.keys: [ colorKey ]
-               Drag.active: mouseArea.drag.active
-               Drag.hotSpot.x: 32
-               Drag.hotSpot.y: 32
-               states: State {
-                   when: mouseArea.drag.active
-                   ParentChange { target: tile; parent: root }
-                   AnchorChanges {
-                       target: tile;
-                       anchors.verticalCenter: undefined;
-                       anchors.horizontalCenter: undefined }
+               anchors {
+                   top: parent.top
+                   bottom: parent.bottom
                }
 
-           }
-       }
+               width: height
+
+               drag.target: tile
+
+               onReleased: {
+
+                   if(tile.Drag.target !== null) {
+
+                       var newGroup = tile.Drag.target.group;
+                       console.debug("New group: ", newGroup);
+                       root.changeGroup(newGroup);
+
+                   }
+
+                   //parent = mouseArea;
+                   //parent = tile.Drag.target !== null ? tile.Drag.target : mouseArea
+               }
+
+               Rectangle {
+                   id: tile
+
+                   width: mouseArea.width
+                   height: mouseArea.height
+                   anchors {
+                       horizontalCenter: parent.horizontalCenter;
+                       verticalCenter: parent.verticalCenter
+                   }
+
+                   color: colorKey
+
+                   //Drag.keys: [ root.taskId ]
+                   Drag.active: mouseArea.drag.active
+                   Drag.hotSpot.x: 32
+                   Drag.hotSpot.y: 32
+
+                   states: State {
+                       when: mouseArea.drag.active
+                       ParentChange {
+                           target: tile
+                           parent: root
+                       }
+                       AnchorChanges {
+                           target: tile;
+                           anchors.verticalCenter: undefined;
+                           anchors.horizontalCenter: undefined
+                       }
+                   }
+
+               }
+            }
+        } // End row.
     }
 
 

@@ -110,10 +110,14 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication app(argc, argv);
-
+    QApplication::setOrganizationName("MonkeySoft");
+    QApplication::setOrganizationDomain("MonkeySoft.com");
+    QApplication::setApplicationName("MonkeySoft");
     QQmlApplicationEngine engine;
 
     registrationTypes();
+
+    QSettings userSettings("MonkeySoft", "User");
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
