@@ -23,6 +23,7 @@ Rectangle {
     DropArea {
         id: dragTarget
 
+        property alias group: root.group
         property string taskId
         //property string colorKey: "red"
         //property alias dropProxy: dragTarget

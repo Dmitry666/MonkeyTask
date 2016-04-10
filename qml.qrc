@@ -13,5 +13,6 @@
     <qresource prefix="/Components">
         <file>TaskItem.qml</file>
         <file>GroupItem.qml</file>
+        <file>MonkeyButton.qml</file>
     </qresource>
 </RCC>

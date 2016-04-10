@@ -295,7 +295,7 @@ Rectangle {
             }
             height: 50
 
-            Button {
+            MonkeyButton {
                 id: addTaskButton
                 text: qsTr("Add")
 
@@ -316,14 +316,14 @@ Rectangle {
             right: parent.right
             bottom: parent.bottom
         }
-        height: parent.height * 0.1
+        height: parent.height * 0.15
 
         GroupItem {
             id: leftGroup
 
             anchors {
                 top: parent.top
-                bottom: parent.bottom
+                bottom: timeScroll.top
                 left: parent.left
             }
 
@@ -340,7 +340,7 @@ Rectangle {
             id: rightGroup
             anchors {
                 top: parent.top
-                bottom: parent.bottom
+                bottom: timeScroll.top
                 right: parent.right
             }
 
@@ -351,6 +351,20 @@ Rectangle {
             onClicked: {
                 root.currentGroup = group;
             }
+        }
+
+        Item {
+            id: timeScroll
+            anchors {
+                left: parent.left
+                right: parent.right
+
+                bottom: parent.bottom
+            }
+
+            height: parent.height * 0.25
+
+            //
         }
     } // End footer.
 }
