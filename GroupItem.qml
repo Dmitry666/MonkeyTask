@@ -6,11 +6,23 @@ Rectangle {
     property int group: 0
     signal clicked
 
-    //color:
+    property var groupToText: {
+        0: qsTr("Today"),
+        1: qsTr("Week"),
+        2: qsTr("Year")
+    }
+
+    property var groupToColor: {
+        0: "yellow",
+        1: "green",
+        2: "blue"
+    }
+
+    color: groupToColor[root.group]
 
     Text {
         anchors.centerIn: parent
-        text: root.group
+        text: groupToText[root.group]
     }
 
     MouseArea {

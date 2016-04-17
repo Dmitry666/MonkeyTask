@@ -24,17 +24,21 @@ Rectangle {
     function loginUser(login, password) {
         monkeyService.sendRequest(
             'GET',
-            '/login?login=%1&password=%2'.arg(login).arg(password),
+            '/ajax/login?login=%1&password=%2'.arg(login).arg(password),
             null,
             function(error, responseText){
 
-                if(error || responseText.toLowerCase() !== "ok") {
+                if(error ) {
 
+                    // || responseText.toLowerCase() !== "ok"
+                    //name
                     root.userLogined = false;
                     console.error("Error login.");
                     return;
                 }
 
+                var jsonObject = JSON.parse(responseText);
+                var name = jsonObject.name;
                 console.debug("User logined");
 
                 root.userLogined = true;

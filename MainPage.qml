@@ -12,6 +12,7 @@ Rectangle {
     color: "green"
     property int currentGroup: 0
 
+
     Settings {
         //id: settings
 
@@ -67,7 +68,7 @@ Rectangle {
         console.debug("getTask");
         monkeyService.sendRequest(
             'GET',
-            '/api/task/:%1'.arg(id),
+            '/api/task/%1'.arg(id),
             null,
             function(error, responseText) {
 
@@ -125,10 +126,15 @@ Rectangle {
         var jsonText = JSON.stringify(task);
         monkeyService.sendRequest(
             'PUT',
-            '/api/task/:%1'.arg(id),
+            '/api/task/%1'.arg(id),
             jsonText,
             function(error, responseText) {
-                console.debug(responseText);
+                if(error) {
+                    console.error("Error: ", console);
+                } else {
+                    console.debug(responseText);
+                }
+
                 callback();
             }
         );
@@ -204,7 +210,7 @@ Rectangle {
         //taskModel.remove();
         monkeyService.sendRequest(
             'DELETE',
-            '/api/task/:%1'.arg(id),
+            '/api/task/%1'.arg(id),
             null,
             function(error, responseText) {
                 console.debug(responseText);
@@ -258,7 +264,7 @@ Rectangle {
                 right: parent.right
 
                 top: parent.top
-                bottom: tools.top
+                bottom: parent.bottom
             }
 
             model: filterModel
@@ -284,32 +290,9 @@ Rectangle {
                 }
             } // End delegate.
         } // End list view.
-
-        // TODO. Create empty task in list view.
-        Item {
-            id: tools
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
-            height: 50
-
-            MonkeyButton {
-                id: addTaskButton
-                text: qsTr("Add")
-
-                anchors.centerIn: parent
-
-                onClicked: {
-
-                    createTask("Empty");
-                }
-            }
-        }
     } // End body.
 
-    Item {
+    Rectangle {
         id: footer
         anchors {
             left: parent.left
@@ -317,42 +300,78 @@ Rectangle {
             bottom: parent.bottom
         }
         height: parent.height * 0.15
+        color: "gray"
 
-        GroupItem {
-            id: leftGroup
-
+        Row {
             anchors {
                 top: parent.top
-                bottom: timeScroll.top
+                bottom: parent.bottom
                 left: parent.left
+
+                topMargin: 5
+                bottomMargin: 5
             }
 
-            width: parent.width / 2
-            color: "red"
+            GroupItem {
+                id: leftGroup
 
-            group: (currentGroup + 1) % 3
-            onClicked: {
-                root.currentGroup = group;
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+
+                width: footer.width / 3
+                //color: "red"
+
+                group: (currentGroup + 1) % 3
+                onClicked: {
+                    root.currentGroup = group;
+                }
             }
-        }
 
-        GroupItem {
-            id: rightGroup
-            anchors {
-                top: parent.top
-                bottom: timeScroll.top
-                right: parent.right
+            // TODO. Create empty task in list view.
+            Item {
+                id: tools
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom //timeScroll.top
+                }
+                //height: 50
+                width: footer.width / 3
+
+                MonkeyButton {
+                    id: addTaskButton
+                    text: qsTr("Add")
+
+                    anchors.fill: parent
+                    anchors.margins: 5
+
+                    onClicked: {
+
+                        createTask("Empty");
+                    }
+                }
             }
 
-            width: parent.width / 2
-            color: "blue"
+            GroupItem {
+                id: rightGroup
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom //timeScroll.top
+                    //right: parent.right
+                }
 
-            group: (currentGroup + 2) % 3
-            onClicked: {
-                root.currentGroup = group;
+                width: footer.width / 3
+                //color: "blue"
+
+                group: (currentGroup + 2) % 3
+                onClicked: {
+                    root.currentGroup = group;
+                }
             }
-        }
+        } // End row.
 
+        /*
         Item {
             id: timeScroll
             anchors {
@@ -366,6 +385,7 @@ Rectangle {
 
             //
         }
+        */
     } // End footer.
 }
 

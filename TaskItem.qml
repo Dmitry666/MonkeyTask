@@ -75,14 +75,16 @@ Rectangle {
             }
 
             verticalAlignment: Text.AlignVCenter
+
+            MouseArea {
+                anchors.fill: parent
+                onDoubleClicked: {
+                    root.edit = true;
+                }
+            }
         }
 
-        TextEdit {
-            id: editText
-            text: root.title
-
-            visible: root.edit
-
+        Rectangle {
             anchors {
                 top: parent.top
                 bottom: parent.bottom
@@ -92,7 +94,18 @@ Rectangle {
                 margins: 5
             }
 
-            verticalAlignment: Text.AlignVCenter
+            visible: root.edit
+
+            TextEdit {
+                id: editText
+
+                anchors.fill: parent
+
+                text: root.title
+
+
+                verticalAlignment: Text.AlignVCenter
+            }
         }
 
         /*

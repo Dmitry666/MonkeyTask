@@ -77,6 +77,8 @@ Item {
                     } else {
 
                         var message = 'Status %1 %2'.arg(request.status).arg(request.statusText);
+                        console.error(message);
+
                         callback(new Error(message));
                     }
 
